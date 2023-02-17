@@ -1,0 +1,62 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: tlsprobe
+  name: tlsprobe
+  namespace: observe
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: tlsprobe
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 0
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: tlsprobe
+    spec:
+      volumes:
+        - name: config
+          configMap:
+            name: tlsprobe-config
+            items:
+              - key: config.yml
+                path: config.yml
+      imagePullSecrets:
+        - name: hz-regcred
+      containers:
+        - image: images-registry-vpc.cn-hangzhou.cr.aliyuncs.com/devops/tlsprobe
+          imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+          name: tlsprobe
+          volumeMounts:
+            - name: config
+              readOnly: true
+              mountPath: /config.yml
+              subPath: config.yml
+          ports:
+            - containerPort: 9217
+              name: http
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 5
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+#          resources:
+#            limits:
+#              cpu: 1000Mi
+#              memory: 512Mi
+#            requests:
+#              memory: 256Mi
