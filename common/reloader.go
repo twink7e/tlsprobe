@@ -163,7 +163,8 @@ func (r *Reloader) LoadConfig(filename string) error {
 
 	// tls checker reload
 	tlsCheckersNamesMap := make(map[string]struct{})
-	for _, t := range cfg.TLSCheckers {
+	for i, _ := range cfg.TLSCheckers {
+		t := cfg.TLSCheckers[i]
 		tlsCheckersNamesMap[t.Key()] = struct{}{}
 		Exp.UpdateTLSChecker(r.ctx, &t, r)
 	}

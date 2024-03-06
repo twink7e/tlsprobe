@@ -4,10 +4,10 @@ import (
 	"context"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/rs/zerolog/log"
-	"tlsprobe/autodiscover"
-	"tlsprobe/common/creator"
 	"sync"
 	"time"
+	"tlsprobe/autodiscover"
+	"tlsprobe/common/creator"
 )
 
 var Exp *Exporter = NewExporter()
@@ -111,7 +111,7 @@ func (e *Exporter) UpdateTLSChecker(ctx context.Context, t *TLSChecker, creator 
 
 func (e *Exporter) RemoveTLSChecker(key string) {
 	e.CheckerRWMutex.Lock()
-	e.CheckerRWMutex.Unlock()
+	defer e.CheckerRWMutex.Unlock()
 	log.Info().Msgf("delete tls checker: %s", key)
 	delete(e.TLSCheckers, key)
 }
