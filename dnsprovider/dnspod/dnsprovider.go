@@ -8,10 +8,10 @@ import (
 	dnspodcommon "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common"
 	"github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/common/profile"
 	dnspod "github.com/tencentcloud/tencentcloud-sdk-go/tencentcloud/dnspod/v20210323"
+	"time"
 	"tlsprobe/autodiscover"
 	"tlsprobe/common/creator"
 	"tlsprobe/dnsprovider"
-	"time"
 )
 
 func Creator(ctx context.Context, cfg *autodiscover.Config, creator creator.Creator) (autodiscover.AutoDiscover, error) {
@@ -219,7 +219,7 @@ func (p *DNSProvider) Start() error {
 			select {
 			case <-p.ctx.Done():
 				return
-			case <-time.After(1 * time.Minute):
+			case <-time.After(10 * time.Minute):
 				p.GetDomains()
 			}
 		}

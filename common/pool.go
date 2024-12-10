@@ -7,6 +7,8 @@ import (
 )
 
 func wrapper(w *WaitPool, f interface{}, args ...interface{}) {
+	defer func() { <-w.ch }()
+	defer w.wg.Done()
 	fn := reflect.ValueOf(f)
 	if fn.Type().NumIn() != len(args) {
 		panic(fmt.Sprintf("invaild input parameters of function %v", fn.Type()))
@@ -16,8 +18,6 @@ func wrapper(w *WaitPool, f interface{}, args ...interface{}) {
 		inputs[k] = reflect.ValueOf(in)
 	}
 	fn.Call(inputs)
-	<-w.ch
-	w.wg.Done()
 }
 
 type WaitPool struct {
